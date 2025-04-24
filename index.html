@@ -309,6 +309,58 @@
         </div>
     </div>
 
+<!-- REGISTER MODALS -->
+<div id="registerDeviceModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
+      <h3 class="text-xl font-bold mb-4">Register New Device</h3>
+      <form id="registerDeviceForm" class="space-y-4">
+        <input type="text" placeholder="Owner Name" class="w-full border border-gray-300 text-gray-800 rounded px-4 py-2" required>
+        <input type="text" placeholder="Phone Number" class="w-full border border-gray-300 text-gray-800 rounded px-4 py-2" required>
+        <input type="text" placeholder="Serial Number" class="w-full border border-gray-300 text-gray-800 rounded px-4 py-2">
+        <input type="text" placeholder="IMEI" class="w-full border border-gray-300 text-gray-800 rounded px-4 py-2">
+        <input type="text" placeholder="MAC Address" class="w-full border border-gray-300 text-gray-800 rounded px-4 py-2">
+        <select class="w-full border border-gray-300 text-gray-800 rounded px-4 py-2">
+          <option>Smartphone</option>
+          <option>Laptop</option>
+          <option>Tablet</option>
+          <option>Other</option>
+        </select>
+        <div class="flex justify-end gap-2">
+          <button type="button" onclick="toggleModal('registerDeviceModal')" class="px-4 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-100">Cancel</button>
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div id="registerVehicleModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
+      <h3 class="text-xl font-bold mb-4">Register New Vehicle</h3>
+      <form id="registerVehicleForm" class="space-y-4">
+        <input type="text" placeholder="Owner Name" class="w-full border border-gray-300 text-gray-800 rounded px-4 py-2" required>
+        <input type="text" placeholder="Phone Number" class="w-full border border-gray-300 text-gray-800 rounded px-4 py-2" required>
+        <input type="text" placeholder="License Plate" class="w-full border border-gray-300 text-gray-800 rounded px-4 py-2">
+        <input type="text" placeholder="Make / Model" class="w-full border border-gray-300 text-gray-800 rounded px-4 py-2">
+        <input type="text" placeholder="Color" class="w-full border border-gray-300 text-gray-800 rounded px-4 py-2">
+        <input type="text" placeholder="Year" class="w-full border border-gray-300 text-gray-800 rounded px-4 py-2">
+        <input type="text" placeholder="RFID Tag (Optional)" class="w-full border border-gray-300 text-gray-800 rounded px-4 py-2">
+        <div class="flex justify-end gap-2">
+          <button type="button" onclick="toggleModal('registerVehicleModal')" class="px-4 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-100">Cancel</button>
+          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Trigger Buttons (place inside appropriate pages if needed) -->
+  <div class="fixed bottom-6 right-6 flex flex-col gap-3 z-40">
+    <button onclick="toggleModal('registerDeviceModal')" class="bg-blue-600 text-white px-5 py-3 rounded-full shadow-lg hover:bg-blue-700">
+      <i class="fas fa-plus mr-2"></i> Register Device
+    </button>
+    <button onclick="toggleModal('registerVehicleModal')" class="bg-green-600 text-white px-5 py-3 rounded-full shadow-lg hover:bg-green-700">
+      <i class="fas fa-plus mr-2"></i> Register Vehicle
+    </button>
+  </div>
+
     <!-- Track Device Page -->
     <div id="track-device" class="page">
         <div class="container mx-auto px-4 py-8">
@@ -974,6 +1026,16 @@
             });
         }
     });
+    function toggleModal(id) {
+    const modal = document.getElementById(id);
+    if (modal.classList.contains('hidden')) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    } else {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+  }
 </script>
 </body>
 </html>
