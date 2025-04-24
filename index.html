@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Security Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+    <!-- Header -->
+    <header class="bg-blue-800 text-white sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-shield-alt text-3xl"></i>
+                    <h1 class="text-2xl font-bold">Campus Security Tracker</h1>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#" class="nav-link hover:text-blue-200 transition" data-page="dashboard">Dashboard</a>
+                    <a href="#" class="nav-link hover:text-blue-200 transition" data-page="track-device">Track Device</a>
+                    <a href="#" class="nav-link hover:text-blue-200 transition" data-page="track-vehicle">Track Vehicle</a>
+                    <a href="#" class="nav-link hover:text-blue-200 transition" data-page="alerts">Alerts</a>
+                    <a href="#" class="nav-link hover:text-blue-200 transition" data-page="admin">Admin</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button id="notificationsBtn" class="text-white hover:text-blue-200">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                        </button>
+                    </div>
+                    <button id="mobileMenuBtn" class="md:hidden text-xl">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-blue-700 px-4 py-2">
+            <div class="flex flex-col space-y-2">
+                <a href="#" class="nav-link hover:text-blue-200 transition py-2" data-page="dashboard">Dashboard</a>
+                <a href="#" class="nav-link hover:text-blue-200 transition py-2" data-page="track-device">Track Device</a>
+                <a href="#" class="nav-link hover:text-blue-200 transition py-2" data-page="track-vehicle">Track Vehicle</a>
+                <a href="#" class="nav-link hover:text-blue-200 transition py-2" data-page="alerts">Alerts</a>
+                <a href="#" class="nav-link hover:text-blue-200 transition py-2" data-page="admin">Admin</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Page -->
+    <div id="dashboard" class="page active">
+        <div class="container mx-auto px-4 py-8">
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500">Active Devices</p>
+                            <h3 class="text-3xl font-bold text-gray-800">1,248</h3>
+                            <p class="text-green-500 text-sm mt-1"><i class="fas fa-arrow-up mr-1"></i> 12% from yesterday</p>
+                        </div>
+                        <div class="bg-blue-100 p-3 rounded-full">
+                            <i class="fas fa-mobile-alt text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500">Tracked Vehicles</p>
+                            <h3 class="text-3xl font-bold text-gray-800">327</h3>
+                            <p class="text-green-500 text-sm mt-1"><i class="fas fa-arrow-up mr-1"></i> 5% from yesterday</p>
+                        </div>
+                        <div class="bg-green-100 p-3 rounded-full">
+                            <i class="fas fa-car text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500">Security Alerts</p>
+                            <h3 class="text-3xl font-bold text-gray-800">18</h3>
+                            <p class="text-red-500 text-sm mt-1"><i class="fas fa-arrow-up mr-1"></i> 3 new today</p>
+                        </div>
+                        <div class="bg-red-100 p-3 rounded-full">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500">Response Time</p>
+                            <h3 class="text-3xl font-bold text-gray-800">4.2m</h3>
+                            <p class="text-green-500 text-sm mt-1"><i class="fas fa-arrow-down mr-1"></i> 15% improvement</p>
+                        </div>
+                        <div class="bg-purple-100 p-3 rounded-full">
+                            <i class="fas fa-stopwatch text-purple-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map View -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+                <div class="bg-blue-600 text-white px-6 py-4">
+                    <h3 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-map-marked-alt mr-3"></i> Live Tracking Map
+                    </h3>
+                </div>
+                <div class="p-4">
+                    <div id="map" class="rounded-lg"></div>
+                </div>
+            </div>
+
+            <!-- Recent Alerts -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+                <div class="bg-blue-600 text-white px-6 py-4">
+                    <h3 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-exclamation-circle mr-3"></i> Recent Security Alerts
+                    </h3>
+                </div>
+                <div class="p-4">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device/Vehicle</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">10:23 AM</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Theft</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Library Parking</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Toyota Corolla (KCD 123A)</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">View</button>
+                                        <button class="text-green-600 hover:text-green-900">Resolve</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">09:45 AM</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">Unauthorized</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Dormitory B</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">iPhone 13 (SN: F2L3K5D9)</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Resolved</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-blue-600 hover:text-blue-900">View</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">08:12 AM</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">Suspicious</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Science Building</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Samsung Galaxy S21 (IMEI: 354879215648795)</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Resolved</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="text-blue-600 hover:text-blue-900">View</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Tracking -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="bg-blue-600 text-white px-6 py-4">
+                    <h3 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-bullseye mr-3"></i> Currently Tracked Items
+                    </h3>
+                </div>
+                <div class="p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Device Card -->
+                        <div class="tracking-card bg-white rounded-lg border border-gray-200 overflow-hidden">
+                            <div class="p-4">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <h4 class="font-bold text-lg text-gray-800">iPhone 12 Pro</h4>
+                                        <p class="text-gray-600 text-sm">SN: DNPQ32KFL7M</p>
+                                        <p class="text-gray-600 text-sm">Owner: John Doe (Student)</p>
+                                    </div>
+                                    <div class="status-active h-3 w-3 rounded-full mt-1"></div>
+                                </div>
+                                <div class="mt-4">
+                                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                        <span>Last seen:</span>
+                                        <span>2 mins ago</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                        <span>Location:</span>
+                                        <span>Library, Floor 2</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm text-gray-600">
+                                        <span>Distance:</span>
+                                        <span>350m from you</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 px-4 py-3 flex justify-between">
+                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    <i class="fas fa-map-marker-alt mr-1"></i> View on Map
+                                </button>
+                                <button class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                    <i class="fas fa-bell mr-1"></i> Alert
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Vehicle Card -->
+                        <div class="tracking-card bg-white rounded-lg border border-gray-200 overflow-hidden">
+                            <div class="p-4">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <h4 class="font-bold text-lg text-gray-800">Toyota RAV4</h4>
+                                        <p class="text-gray-600 text-sm">Plate: KCR 456B</p>
+                                        <p class="text-gray-600 text-sm">Owner: Prof. Sarah Smith</p>
+                                    </div>
+                                    <div class="status-active h-3 w-3 rounded-full mt-1"></div>
+                                </div>
+                                <div class="mt-4">
+                                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                        <span>Last seen:</span>
+                                        <span>5 mins ago</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                        <span>Location:</span>
+                                        <span>Faculty Parking Lot</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm text-gray-600">
+                                        <span>Distance:</span>
+                                        <span>800m from you</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 px-4 py-3 flex justify-between">
+                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    <i class="fas fa-map-marker-alt mr-1"></i> View on Map
+                                </button>
+                                <button class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                    <i class="fas fa-bell mr-1"></i> Alert
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Device Card -->
+                        <div class="tracking-card bg-white rounded-lg border border-gray-200 overflow-hidden">
+                            <div class="p-4">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <h4 class="font-bold text-lg text-gray-800">Samsung Galaxy S22</h4>
+                                        <p class="text-gray-600 text-sm">IMEI: 354879215648795</p>
+                                        <p class="text-gray-600 text-sm">Owner: Mary Johnson (Staff)</p>
+                                    </div>
+                                    <div class="status-warning h-3 w-3 rounded-full mt-1"></div>
+                                </div>
+                                <div class="mt-4">
+                                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                        <span>Last seen:</span>
+                                        <span>15 mins ago</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                        <span>Location:</span>
+                                        <span>Cafeteria</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm text-gray-600">
+                                        <span>Distance:</span>
+                                        <span>500m from you</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 px-4 py-3 flex justify-between">
+                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    <i class="fas fa-map-marker-alt mr-1"></i> View on Map
+                                </button>
+                                <button class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                    <i class="fas fa-bell mr-1"></i> Alert
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Track Device Page -->
+    <div id="track-device" class="page">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex items-center mb-6">
+                <div class="bg-blue-100 p-3 rounded-full mr-4">
+                    <i class="fas fa-mobile-alt text-blue-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">Track Device</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Search Form -->
+                <div class="bg-white rounded-xl shadow-md p-6 lg:col-span-1">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Search Device</h3>
+                    <form id="deviceSearchForm">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-medium mb-2">Search By</label>
+                            <select id="searchType" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                                <option value="serial">Serial Number</option>
+                                <option value="imei">IMEI</option>
+                                <option value="phone">Phone Number</option>
+                                <option value="owner">Owner Name</option>
+                                <option value="mac">MAC Address</option>
+                            </select>
+                        </div>
+                                                
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-medium mb-2">Search Value</label>
+                            <input type="text" id="searchValue" placeholder="Enter search value..."
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                        </div>
+                                                
+                        <button type="submit" class="w-full bg-blue-600 text-white font-bold px-4 py-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center">
+                            <i class="fas fa-search mr-2"></i> Search Device
+                        </button>
+                    </form>
+                                        
+                    <div class="mt-6">
+                        <h4 class="font-semibold text-gray-800 mb-2">Quick Search</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button class="quick-search-btn bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition" data-type="serial" data-value="DNPQ32KFL7M">
+                                <i class="fas fa-barcode mr-1"></i> Serial
+                            </button>
+                            <button class="quick-search-btn bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition" data-type="imei" data-value="354879215648795">
+                                <i class="fas fa-mobile mr-1"></i> IMEI
+                            </button>
+                            <button class="quick-search-btn bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition" data-type="phone" data-value="0712345678">
+                                <i class="fas fa-phone mr-1"></i> Phone
+                            </button>
+                            <button class="quick-search-btn bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition" data-type="owner" data-value="John Doe">
+                                <i class="fas fa-user mr-1"></i> Owner
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                                
+                <!-- Results Section -->
+                <div class="bg-white rounded-xl shadow-md p-6 lg:col-span-2">
+                    <div id="deviceSearchResults">
+                        <div class="text-center py-12">
+                            <div class="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-search text-blue-600 text-2xl"></i>
+                            </div>
+                            <h4 class="text-xl font-semibold text-gray-800 mb-2">Search for a Device</h4>
+                            <p class="text-gray-600 max-w-md mx-auto">Enter device details to track its current location and status.</p>
+                        </div>
+                    </div>
+                                        
+                    <!-- Map for Device Tracking -->
+                    <div id="deviceMap" class="mt-6 rounded-lg overflow-hidden" style="display: none;">
+                        <!-- Map will be initialized here -->
+                    </div>
+                                        
+                    <!-- Device Details (shown after search) -->
+                    <div id="deviceDetails" class="mt-6 hidden">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-semibold text-gray-800">Device Details</h4>
+                            <button id="trackDeviceBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center">
+                                <i class="fas fa-location-arrow mr-2"></i> Track Live
+                            </button>
+                        </div>
+                                                
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h5 class="font-medium text-gray-700 mb-2">Device Information</h5>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">Device Type:</span>
+                                        <span class="font-medium">Smartphone</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">Model:</span>
+                                        <span class="font-medium">iPhone 12 Pro</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">Serial Number:</span>
+                                        <span class="font-medium">DNPQ32KFL7M</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">IMEI:</span>
+                                        <span class="font-medium">356879215648795</span>
+                                    </div>
+                                    <div class="flex justify-between py-2">
+                                        <span class="text-gray-600">MAC Address:</span>
+                                        <span class="font-medium">00:1A:2B:3C:4D:5E</span>
+                                    </div>
+                                </div>
+                            </div>
+                                                    
+                            <div>
+                                <h5 class="font-medium text-gray-700 mb-2">Owner Information</h5>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">Name:</span>
+                                        <span class="font-medium">John Doe</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">Role:</span>
+                                        <span class="font-medium">Student</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">ID Number:</span>
+                                        <span class="font-medium">STD/2021/1234</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">Phone:</span>
+                                        <span class="font-medium">0712345678</span>
+                                    </div>
+                                    <div class="flex justify-between py-2">
+                                        <span class="text-gray-600">Email:</span>
+                                        <span class="font-medium">john.doe@university.edu</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                                
+                        <div class="mt-6">
+                            <h5 class="font-medium text-gray-700 mb-2">Tracking Information</h5>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-600">Current Status</p>
+                                        <p class="font-bold text-green-600">Active</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-600">Last Seen</p>
+                                        <p class="font-bold">2 minutes ago</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-600">Battery Level</p>
+                                        <p class="font-bold">78%</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-sm text-gray-600 mb-1">Current Location</p>
+                                    <p class="font-medium">Library, Floor 2, Room 204</p>
+                                    <p class="text-sm text-gray-500">GPS: -1.23456, 36.78910</p>
+                                </div>
+                            </div>
+                        </div>
+                                                
+                        <div class="mt-6 flex justify-between">
+                            <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition flex items-center">
+                                <i class="fas fa-history mr-2"></i> Location History
+                            </button>
+                            <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition flex items-center">
+                                <i class="fas fa-bell mr-2"></i> Report Theft
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Track Vehicle Page -->
+    <div id="track-vehicle" class="page">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex items-center mb-6">
+                <div class="bg-green-100 p-3 rounded-full mr-4">
+                    <i class="fas fa-car text-green-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">Track Vehicle</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Search Form -->
+                <div class="bg-white rounded-xl shadow-md p-6 lg:col-span-1">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Search Vehicle</h3>
+                    <form id="vehicleSearchForm">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-medium mb-2">Search By</label>
+                            <select id="vehicleSearchType" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                                <option value="plate">License Plate</option>
+                                <option value="serial">Serial Number</option>
+                                <option value="owner">Owner Name</option>
+                                <option value="make">Make/Model</option>
+                                <option value="rfid">RFID Tag</option>
+                            </select>
+                        </div>
+                                                
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-medium mb-2">Search Value</label>
+                            <input type="text" id="vehicleSearchValue" placeholder="Enter search value..."
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                        </div>
+                                                
+                        <button type="submit" class="w-full bg-green-600 text-white font-bold px-4 py-3 rounded-lg hover:bg-green-700 transition flex items-center justify-center">
+                            <i class="fas fa-search mr-2"></i> Search Vehicle
+                        </button>
+                    </form>
+                                        
+                    <div class="mt-6">
+                        <h4 class="font-semibold text-gray-800 mb-2">Quick Search</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button class="quick-search-btn bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition" data-type="plate" data-value="KCR 456B">
+                                <i class="fas fa-car mr-1"></i> Plate
+                            </button>
+                            <button class="quick-search-btn bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition" data-type="owner" data-value="Prof. Sarah Smith">
+                                <i class="fas fa-user mr-1"></i> Owner
+                            </button>
+                            <button class="quick-search-btn bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition" data-type="make" data-value="Toyota">
+                                <i class="fas fa-industry mr-1"></i> Make
+                            </button>
+                            <button class="quick-search-btn bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition" data-type="rfid" data-value="RFID-789456">
+                                <i class="fas fa-tag mr-1"></i> RFID
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                                
+                <!-- Results Section -->
+                <div class="bg-white rounded-xl shadow-md p-6 lg:col-span-2">
+                    <div id="vehicleSearchResults">
+                        <div class="text-center py-12">
+                            <div class="bg-green-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-search text-green-600 text-2xl"></i>
+                            </div>
+                            <h4 class="text-xl font-semibold text-gray-800 mb-2">Search for a Vehicle</h4>
+                            <p class="text-gray-600 max-w-md mx-auto">Enter vehicle details to track its current location and status.</p>
+                        </div>
+                    </div>
+                                        
+                    <!-- Map for Vehicle Tracking -->
+                    <div id="vehicleMap" class="mt-6 rounded-lg overflow-hidden" style="display: none;">
+                        <!-- Map will be initialized here -->
+                    </div>
+                                        
+                    <!-- Vehicle Details (shown after search) -->
+                    <div id="vehicleDetails" class="mt-6 hidden">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-semibold text-gray-800">Vehicle Details</h4>
+                            <button id="trackVehicleBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center">
+                                <i class="fas fa-location-arrow mr-2"></i> Track Live
+                            </button>
+                        </div>
+                                                
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h5 class="font-medium text-gray-700 mb-2">Vehicle Information</h5>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">Make:</span>
+                                        <span class="font-medium">Toyota</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">Model:</span>
+                                        <span class="font-medium">RAV4</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">Year:</span>
+                                        <span class="font-medium">2020</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">Color:</span>
+                                        <span class="font-medium">Silver</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">Plate Number:</span>
+                                        <span class="font-medium">KCR 456B</span>
+                                    </div>
+                                    <div class="flex justify-between py-2">
+                                        <span class="text-gray-600">RFID Tag:</span>
+                                        <span class="font-medium">RFID-789456</span>
+                                    </div>
+                                </div>
+                            </div>
+                                                    
+                            <div>
+                                <h5 class="font-medium text-gray-700 mb-2">Owner Information</h5>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">Name:</span>
+                                        <span class="font-medium">Prof. Sarah Smith</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">Role:</span>
+                                        <span class="font-medium">Faculty</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">Department:</span>
+                                        <span class="font-medium">Computer Science</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b border-gray-200">
+                                        <span class="text-gray-600">Phone:</span>
+                                        <span class="font-medium">0723456789</span>
+                                    </div>
+                                    <div class="flex justify-between py-2">
+                                        <span class="text-gray-600">Email:</span>
+                                        <span class="font-medium">sarah.smith@university.edu</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                                
+                        <div class="mt-6">
+                            <h5 class="font-medium text-gray-700 mb-2">Tracking Information</h5>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-600">Current Status</p>
+                                        <p class="font-bold text-green-600">Parked</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-600">Last Movement</p>
+                                        <p class="font-bold">15 minutes ago</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-600">Speed</p>
+                                        <p class="font-bold">0 km/h</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-sm text-gray-600 mb-1">Current Location</p>
+                                    <p class="font-medium">Faculty Parking Lot, Section B</p>
+                                    <p class="text-sm text-gray-500">GPS: -1.23458, 36.78912</p>
+                                </div>
+                            </div>
+                        </div>
+                                                
+                        <div class="mt-6 flex justify-between">
+                            <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition flex items-center">
+                                <i class="fas fa-history mr-2"></i> Movement History
+                            </button>
+                            <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition flex items-center">
+                                <i class="fas fa-bell mr-2"></i> Report Incident
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts Page -->
+    <div id="alerts" class="page">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex items-center mb-6">
+                <div class="bg-red-100 p-3 rounded-full mr-4">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">Security Alerts</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Alert Filters -->
+                <div class="bg-white rounded-xl shadow-md p-6 lg:col-span-1">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Filter Alerts</h3>
+                    <form id="alertFilters">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-medium mb-2">Alert Type</label>
+                            <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                                <option value="all">All Types</option>
+                                <option value="theft">Theft</option>
+                                <option value="unauthorized">Unauthorized Access</option>
+                                <option value="suspicious">Suspicious Activity</option>
+                                <option value="violence">Violence</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                                                
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-medium mb-2">Status</label>
+                            <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                                <option value="all">All Statuses</option>
+                                <option value="pending">Pending</option>
+                                <option value="investigating">Investigating</option>
+                                <option value="resolved">Resolved</option>
+                            </select>
+                        </div>
+                                                
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-medium mb-2">Time Range</label>
+                            <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                                <option value="year">This Year</option>
+                                <option value="custom">Custom Range</option>
+                            </select>
+                        </div>
+                                                
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-medium mb-2">Location</label>
+                            <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                                <option value="all">All Locations</option>
+                                <option value="library">Library</option>
+                                <option value="dormitory">Dormitories</option>
+                                <option value="classroom">Classrooms</option>
+                                <option value="parking">Parking Lots</option>
+                                <option value="cafeteria">Cafeteria</option>
+                                <option value="sports">Sports Facilities</option>
+                            </select>
+                        </div>
+                                                
+                        <button type="submit" class="w-full bg-blue-600 text-white font-bold px-4 py-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center">
+                            <i class="fas fa-filter mr-2"></i> Apply Filters
+                        </button>
+                    </form>
+                </div>
+                                
+                <!-- Alerts List -->
+                <div class="bg-white rounded-xl shadow-md p-6 lg:col-span-2">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800">Recent Security Alerts</h3>
+                        <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition flex items-center">
+                            <i class="fas fa-plus mr-2"></i> New Alert
+                        </button>
+                    </div>
+                                        
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <!-- <th scope="col" class="px极抱歉，我的回答被截断了。以下是完整的JavaScript部分，包含所有功能实现： -->
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">10:23 AM</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-semibold">Theft</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-500">Pending</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Library</td>
+                                </tr>
+                            </tbody>
+                         </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                  
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // DOM Elements
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page');
+        const notificationsBtn = document.getElementById('notificationsBtn');
+        const deviceSearchForm = document.getElementById('deviceSearchForm');
+        const vehicleSearchForm = document.getElementById('vehicleSearchForm');
+        const quickSearchBtns = document.querySelectorAll('.quick-search-btn');
+        const trackDeviceBtn = document.getElementById('trackDeviceBtn');
+        const trackVehicleBtn = document.getElementById('trackVehicleBtn');
+        const deviceDetails = document.getElementById('deviceDetails');
+        const vehicleDetails = document.getElementById('vehicleDetails');
+        const deviceSearchResults = document.getElementById('deviceSearchResults');
+        const vehicleSearchResults = document.getElementById('vehicleSearchResults');
+        const deviceMapEl = document.getElementById('deviceMap');
+        const vehicleMapEl = document.getElementById('vehicleMap');
+        const mainMapEl = document.getElementById('map');
+
+        // Initialize maps
+        let mainMap, deviceMap, vehicleMap;
+        
+        // Initialize main map
+        if (mainMapEl) {
+            mainMap = L.map('map').setView([-1.2921, 36.8219], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(mainMap);
+            
+            // Add sample markers
+            L.marker([-1.2921, 36.8219]).addTo(mainMap)
+                .bindPopup('Security Office')
+                .openPopup();
+            
+            L.marker([-1.2915, 36.8205]).addTo(mainMap)
+                .bindPopup('Library')
+                .openPopup();
+            
+            L.marker([-1.2930, 36.8225]).addTo(mainMap)
+                .bindPopup('Dormitory A');
+        }
+
+        // Mobile menu toggle
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Navigation between pages
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pageId = this.getAttribute('data-page');
+                
+                // Hide all pages
+                pages.forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                // Show selected page
+                document.getElementById(pageId).classList.add('active');
+                
+                // Close mobile menu if open
+                mobileMenu.classList.add('hidden');
+                
+                // Initialize map for the page if needed
+                if (pageId === 'track-device' && !deviceMap) {
+                    deviceMapEl.style.display = 'block';
+                    deviceMap = L.map('deviceMap').setView([-1.2921, 36.8219], 15);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(deviceMap);
+                }
+                
+                if (pageId === 'track-vehicle' && !vehicleMap) {
+                    vehicleMapEl.style.display = 'block';
+                    vehicleMap = L.map('vehicleMap').setView([-1.2921, 36.8219], 15);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(vehicleMap);
+                }
+            });
+        });
+
+        // Device search form
+        if (deviceSearchForm) {
+            deviceSearchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const searchType = document.getElementById('searchType').value;
+                const searchValue = document.getElementById('searchValue').value;
+                
+                // Simulate search
+                simulateDeviceSearch(searchType, searchValue);
+            });
+        }
+
+        // Vehicle search form
+        if (vehicleSearchForm) {
+            vehicleSearchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const searchType = document.getElementById('vehicleSearchType').value;
+                const searchValue = document.getElementById('vehicleSearchValue').value;
+                
+                // Simulate search
+                simulateVehicleSearch(searchType, searchValue);
+            });
+        }
+
+        // Quick search buttons
+        quickSearchBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const searchType = this.getAttribute('data-type');
+                const searchValue = this.getAttribute('data-value');
+                
+                if (this.closest('#track-device')) {
+                    document.getElementById('searchType').value = searchType;
+                    document.getElementById('searchValue').value = searchValue;
+                    simulateDeviceSearch(searchType, searchValue);
+                } else {
+                    document.getElementById('vehicleSearchType').value = searchType;
+                    document.getElementById('vehicleSearchValue').value = searchValue;
+                    simulateVehicleSearch(searchType, searchValue);
+                }
+            });
+        });
+
+        // Track device button
+        if (trackDeviceBtn) {
+            trackDeviceBtn.addEventListener('click', function() {
+                deviceMapEl.style.display = 'block';
+                deviceDetails.classList.add('fade-in');
+                
+                if (deviceMap) {
+                    deviceMap.setView([-1.2921, 36.8219], 18);
+                    L.marker([-1.2921, 36.8219]).addTo(deviceMap)
+                        .bindPopup('iPhone 12 Pro<br>Library, Floor 2')
+                        .openPopup();
+                }
+            });
+        }
+
+        // Track vehicle button
+        if (trackVehicleBtn) {
+            trackVehicleBtn.addEventListener('click', function() {
+                vehicleMapEl.style.display = 'block';
+                vehicleDetails.classList.add('fade-in');
+                
+                if (vehicleMap) {
+                    vehicleMap.setView([-1.2915, 36.8205], 18);
+                    L.marker([-1.2915, 36.8205]).addTo(vehicleMap)
+                        .bindPopup('Toyota RAV4<br>Faculty Parking Lot')
+                        .openPopup();
+                }
+            });
+        }
+
+        // Simulate device search
+        function simulateDeviceSearch(type, value) {
+            // Show loading state
+            deviceSearchResults.innerHTML = `
+                <div class="text-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-2">Searching for device...</h4>
+                    <p class="text-gray-600 max-w-md mx-auto">Searching by ${type} for "${value}"</p>
+                </div>
+            `;
+            
+            // Simulate API delay
+            setTimeout(() => {
+                deviceSearchResults.style.display = 'none';
+                deviceDetails.classList.remove('hidden');
+                deviceDetails.classList.add('fade-in');
+                
+                // Scroll to details
+                deviceDetails.scrollIntoView({ behavior: 'smooth' });
+            }, 1500);
+        }
+
+        // Simulate vehicle search
+        function simulateVehicleSearch(type, value) {
+            // Show loading state
+            vehicleSearchResults.innerHTML = `
+                <div class="text-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-2">Searching for vehicle...</h4>
+                    <p class="text-gray-600 max-w-md mx-auto">Searching by ${type} for "${value}"</p>
+                </div>
+            `;
+            
+            // Simulate API delay
+            setTimeout(() => {
+                vehicleSearchResults.style.display = 'none';
+                vehicleDetails.classList.remove('hidden');
+                vehicleDetails.classList.add('fade-in');
+                
+                // Scroll to details
+                vehicleDetails.scrollIntoView({ behavior: 'smooth' });
+            }, 1500);
+        }
+
+        // Notifications button
+        if (notificationsBtn) {
+            notificationsBtn.addEventListener('click', function() {
+                alert('You have 3 new notifications');
+            });
+        }
+    });
+</script>
+</body>
+</html>
