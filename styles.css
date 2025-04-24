@@ -52,3 +52,11 @@ body {
 .page.active {
     display: block;
 }
+/* Force Leaflet map behind other elements */
+.leaflet-container {
+    z-index: 0 !important;
+  }
+  
+  .leaflet-control-container {
+    z-index: 1 !important; /* keep zoom buttons on top */
+  }
