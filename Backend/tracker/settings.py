@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'channels',
     'application'
-    # 'tracking',
-    # 'alerts'
+    'tracking',
+    'alerts'
 ]
 
 MIDDLEWARE = [
