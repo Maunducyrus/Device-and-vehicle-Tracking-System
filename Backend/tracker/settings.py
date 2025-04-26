@@ -54,6 +54,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# WebSocket ASGI settings
+ASGI_APPLICATION = 'campus_tracker_backend.asgi.application'
+
 ROOT_URLCONF = 'tracker.urls'
 
 TEMPLATES = [
