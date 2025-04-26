@@ -10,3 +10,9 @@ class Alert(models.Model):
         ('violence', 'Violence'),
         ('other', 'Other'),
     ]
+
+    STARUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('investigating', 'Investigating'),
+        ('resolved', 'Resolved'),
+    ]
