@@ -20,3 +20,6 @@ class Device(models.Model):
     last_longitude = models.FloatField(blank=True, null=True)
     is_stolen = models.BooleanField(default=False)
     update_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.device_type} - {self.owner_name}"
