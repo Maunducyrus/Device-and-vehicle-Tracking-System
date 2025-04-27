@@ -24,3 +24,12 @@ def device_search(request):
     devices = Device.objects.filter(**{search_type: search_value})
     serializer = DeviceSerializer(devices, many=True)
     return Response(serializer.data)
+
+# Vehicle Search
+@api_view(['GET'])
+def vehicle_search(request):
+    search_type = request.query_params.get('search_type')
+    search_value = request.query_params.get('search_value')
+    vehicles = Vehicle.objects.filter(**{search_type: search_value})
+    serializer = VehicleSerializer(vehicles, many=True)
+    return Response(serializer.data)
