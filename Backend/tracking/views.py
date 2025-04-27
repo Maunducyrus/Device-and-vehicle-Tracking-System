@@ -45,3 +45,15 @@ def update_device_location(request, pk):
        return Response({'message': 'Device location updated successfully'}, status=status.HTTP_200_OK)
     except Device.DoesNotExist:
        return Response({'error': 'Device not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+# Update Vehicle Location
+@api_view(['PATCH'])
+def update_vehicle_location(request, pk):
+    try:
+       vehicle = Vehicle.objects.get(pk=pk)
+       vehicle.last_latitude = request.data.get('latitude')
+       vehicle.last_longitude = request.data.get('longitude')
+       vehicle.save()
+       return Response({'message': 'Vehicle location updated successfully'}, status=status.HTTP_200_OK)
+    except Vehicle.DoesNotExist:
+       return Response({'error': 'Vehicle not found'}, status=status.HTTP_404_NOT_FOUND)
