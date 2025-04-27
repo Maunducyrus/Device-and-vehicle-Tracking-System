@@ -10,3 +10,8 @@ from rest_framework.decorators import api_view
 class DeviceCreateView(generics.CreateAPIView):
     queryset = Device.objects.all()
     serializer_class = DeviceSerializer
+
+#Vehicle Registration
+class VehicleCreateView(generics.CreateAPIView):
+    queryset = Vehicle.objects.all()
+    serializer_class = VehicleSerializer
