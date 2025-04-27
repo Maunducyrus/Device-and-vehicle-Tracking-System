@@ -33,3 +33,15 @@ def vehicle_search(request):
     vehicles = Vehicle.objects.filter(**{search_type: search_value})
     serializer = VehicleSerializer(vehicles, many=True)
     return Response(serializer.data)
+
+# Update Device Location
+@api_view(['PATCH'])
+def update_device_location(request, pk):
+    try:
+       device = Device.objects.get(pk=pk)
+       device.last_latitude = request.data.get('latitude')
+       device.last_longitude = request.data.get('longitude')
+       device.save()
+       return Response({'message': 'Device location updated successfully'}, status=status.HTTP_200_OK)
+    except Device.DoesNotExist:
+       return Response({'error': 'Device not found'}, status=status.HTTP_404_NOT_FOUND)
