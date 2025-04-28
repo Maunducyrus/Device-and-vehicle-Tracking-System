@@ -215,3 +215,35 @@
       modal.classList.remove('flex');
     }
   }
+
+  // Connect to WebSocket server
+const socket = new WebSocket('ws://127.0.0.1:8000/ws/location/');
+
+socket.onopen = function(event) {
+  console.log("WebSocket connection established.");
+};
+
+socket.onmessage = function(event) {
+  const data = JSON.parse(event.data);
+  console.log("Received live update:", data);
+
+  const { id, type, latitude, longitude } = data;
+
+  if (type === 'device') {
+    updateDeviceMarker(id, latitude, longitude);
+  } else if (type === 'vehicle') {
+    updateVehicleMarker(id, latitude, longitude);
+  }
+};
+
+// Dummy functions - we'll define them
+function updateDeviceMarker(id, lat, lng) {
+  console.log(`Updating device ${id} to lat: ${lat}, lng: ${lng}`);
+  // Example: move marker on Leaflet map
+}
+
+function updateVehicleMarker(id, lat, lng) {
+  console.log(`Updating vehicle ${id} to lat: ${lat}, lng: ${lng}`);
+  // Example: move marker on Leaflet map
+}
+
