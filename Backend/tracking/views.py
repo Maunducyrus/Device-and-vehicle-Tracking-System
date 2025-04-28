@@ -44,6 +44,21 @@ def update_device_location(request, pk):
        device.last_latitude = request.data.get('latitude')
        device.last_longitude = request.data.get('longitude')
        device.save()
+       # Real-time push via WebSocket
+       channel_layer = get_channel_layer()
+       async_to_sync(channel_layer.group_send)(
+           'location_updates',
+           {
+                'type': 'send_location',
+                'data':{
+                    'id': device.id,
+                    'type': 'device',
+                    'latitude': device.last_latitude,
+                    'longitude': device.last_longitude
+                }
+              }
+       )
+    
        return Response({'message': 'Device location updated successfully'}, status=status.HTTP_200_OK)
     except Device.DoesNotExist:
        return Response({'error': 'Device not found'}, status=status.HTTP_404_NOT_FOUND)
