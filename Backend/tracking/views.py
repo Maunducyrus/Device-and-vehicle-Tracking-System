@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from .models import Device, Vehicle
 from .serializers import DeviceSerializer, VehicleSerializer
 from rest_framework.decorators import api_view
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 # Device Registration
 class DeviceCreateView(generics.CreateAPIView):
