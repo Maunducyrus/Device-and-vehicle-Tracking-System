@@ -277,3 +277,22 @@ function updateDeviceMarker(id, lat, lng) {
   }
 }
 
+// Hook Registration Forms to Backend
+document.getElementById("registerDeviceForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const payload = {
+      owner_name: this[0].value,
+      phone_number: this[1].value,
+      serial_number: this[2].value,
+      imei: this[3].value,
+      mac_address: this[4].value,
+      device_type: this[5].value,
+    };
+    fetch("/api/devices/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }).then(res => {
+      if (res.ok) alert("Device registered successfully");
+    });
+  });
