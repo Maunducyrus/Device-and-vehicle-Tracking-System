@@ -157,13 +157,23 @@
         // Simulate device search
         function simulateDeviceSearch(type, value) {
             // Show loading state
-            deviceSearchResults.innerHTML = `
-                <div class="text-center py-12">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <h4 class="text-xl font-semibold text-gray-800 mb-2">Searching for device...</h4>
-                    <p class="text-gray-600 max-w-md mx-auto">Searching by ${type} for "${value}"</p>
-                </div>
-            `;
+            fetch(`/api/devices/search/?type=${type}&value=${value}`)
+                .then(res => res.json())
+                .then(data => {
+                // display data dynamically, show map marker
+                const device = data[0]; // assuming one match
+                updateDeviceMarker(device.id, device.last_latitude, device.last_longitude);
+                deviceMapEl.style.display = 'block';
+                deviceDetails.classList.remove('hidden');
+            });
+
+            // deviceSearchResults.innerHTML = `
+            //     <div class="text-center py-12">
+            //         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            //         <h4 class="text-xl font-semibold text-gray-800 mb-2">Searching for device...</h4>
+            //         <p class="text-gray-600 max-w-md mx-auto">Searching by ${type} for "${value}"</p>
+            //     </div>
+            // `;
             
             // Simulate API delay
             setTimeout(() => {
@@ -179,13 +189,22 @@
         // Simulate vehicle search
         function simulateVehicleSearch(type, value) {
             // Show loading state
-            vehicleSearchResults.innerHTML = `
-                <div class="text-center py-12">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-                    <h4 class="text-xl font-semibold text-gray-800 mb-2">Searching for vehicle...</h4>
-                    <p class="text-gray-600 max-w-md mx-auto">Searching by ${type} for "${value}"</p>
-                </div>
-            `;
+            fetch(`/api/devices/search/?type=${type}&value=${value}`)
+                .then(res => res.json())
+                .then(data => {
+                // display data dynamically, show map marker
+                const device = data[0]; // assuming one match
+                updateDeviceMarker(device.id, device.last_latitude, device.last_longitude);
+                deviceMapEl.style.display = 'block';
+                deviceDetails.classList.remove('hidden');
+            });
+            // vehicleSearchResults.innerHTML = `
+            //     <div class="text-center py-12">
+            //         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+            //         <h4 class="text-xl font-semibold text-gray-800 mb-2">Searching for vehicle...</h4>
+            //         <p class="text-gray-600 max-w-md mx-auto">Searching by ${type} for "${value}"</p>
+            //     </div>
+            // `;
             
             // Simulate API delay
             setTimeout(() => {
