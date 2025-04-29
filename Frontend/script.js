@@ -83,6 +83,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  if (pageId === 'dashboard') {
+    loadDevices();
+    loadVehicles();
+  }
+  
   if (vehicleSearchForm) {
     vehicleSearchForm.addEventListener('submit', function (e) {
       e.preventDefault();
