@@ -266,3 +266,14 @@ function updateVehicleMarker(id, lat, lng) {
   // Example: move marker on Leaflet map
 }
 
+// Fix Marker Updating Functions
+let deviceMarker;
+function updateDeviceMarker(id, lat, lng) {
+  if (!deviceMap) return;
+  if (deviceMarker) {
+    deviceMarker.setLatLng([lat, lng]);
+  } else {
+    deviceMarker = L.marker([lat, lng]).addTo(deviceMap);
+  }
+}
+
