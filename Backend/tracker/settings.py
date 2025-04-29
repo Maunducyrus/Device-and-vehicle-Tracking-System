@@ -58,7 +58,7 @@ MIDDLEWARE = [
 ]
 
 # WebSocket ASGI settings
-ASGI_APPLICATION = 'campus_tracker_backend.asgi.application'
+ASGI_APPLICATION = 'tracker.asgi.application'
 
 # Redis for channels
 CHANNEL_LAYERS = {
@@ -149,7 +149,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# settings.py
-INSTALLED_APPS += ['corsheaders']
-MIDDLEWARE += ['corsheaders.middleware.CorsMiddleware']
 CORS_ALLOW_ALL_ORIGINS = True  # For development only
