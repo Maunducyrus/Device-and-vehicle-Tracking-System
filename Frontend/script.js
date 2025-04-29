@@ -140,7 +140,8 @@ document.addEventListener('DOMContentLoaded', function () {
   
     const deviceForm = document.getElementById("registerDeviceForm");
     if (deviceForm) {
-      deviceForm.addEventListener("submit", function (e) {
+
+      deviceForm.addEventListener("submit", async function (e) {
         e.preventDefault();
         const payload = {
           owner_name: this[0].value,
@@ -150,21 +151,48 @@ document.addEventListener('DOMContentLoaded', function () {
           mac_address: this[4].value,
           device_type: this[5].value,
         };
-        fetch(`${BASE_API}/api/devices/`, {
+    //     fetch(`${BASE_API}/api/devices/`, {
+    //       method: "POST",
+    //       headers: { "Content-Type": "application/json" },
+    //       body: JSON.stringify(payload)
+    //     })
+    //     .then(res => {
+    //       if (res.ok) {
+    //         alert("Device registered successfully");
+    //         toggleModal("registerDeviceModal");
+    //         // this.reset();
+    //         deviceForm.reset();
+    //       } else {
+    //         const errorData = await res.json();
+    //         console.error("Error:", errorData);
+    //         // alert("Device registration failed");
+    //         alert(" Error: " + JSON.stringify(errorData, null, 2));
+    //       }
+    //     });
+        
+    //   });
+    // }
+    try {
+        const res = await fetch(`${BASE_API}/api/devices/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
-        }).then(res => {
-          if (res.ok) {
-            alert("Device registered successfully");
-            toggleModal("registerDeviceModal");
-            this.reset();
-          } else {
-            alert("Device registration failed");
-          }
         });
-      });
-    }
+    
+        if (res.ok) {
+          alert("✅ Device registered successfully");
+          toggleModal("registerDeviceModal");
+          deviceForm.reset();
+        } else {
+          const errorData = await res.json();
+          console.error("❌ Error:", errorData);
+          alert("❌ Error: " + JSON.stringify(errorData, null, 2));
+        }
+      } catch (err) {
+        console.error("❌ Network Error:", err);
+        alert("❌ Failed to reach server.");
+      }
+    });    }
   
     const vehicleForm = document.getElementById("registerVehicleForm");
     if (vehicleForm) {
