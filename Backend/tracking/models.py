@@ -30,7 +30,7 @@ class Vehicle(models.Model):
     license_plate = models.CharField(max_length=100, unique=True)
     make_model = models.CharField(max_length=100)
     color = models.CharField(max_length=50)
-    year = models.IntegerField(max_length=10)
+    year = models.IntegerField(blank=True, null=True)
     rfid_tag = models.CharField(max_length=100, blank=True, null=True)
     last_latitude = models.FloatField(blank=True, null=True)
     last_longitude = models.FloatField(blank=True, null=True)
