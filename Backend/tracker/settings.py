@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'channels',
     'application',
     'tracking',
-    'alerts'
+    'alerts',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
