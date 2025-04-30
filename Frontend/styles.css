@@ -60,3 +60,12 @@ body {
   .leaflet-control-container {
     z-index: 1 !important; /* keep zoom buttons on top */
   }
+
+  .vehicle-marker-icon {
+    width: 100%;
+    height: 100%;
+    background-color: #4285F4;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
