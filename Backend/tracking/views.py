@@ -93,7 +93,7 @@ def update_device_location(request, pk):
        async_to_sync(channel_layer.group_send)(
            'location_updates',
            {
-                'type': 'send_location',
+                'type': 'location_update',
                 'data':{
                     'id': device.id,
                     'type': 'device',

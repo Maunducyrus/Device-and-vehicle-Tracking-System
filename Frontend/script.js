@@ -404,6 +404,11 @@ function toggleModal(id) {
 }
 
 function updateDeviceMarker(id, lat, lng) {
+    // More comprehensive validation
+    if (id == null || lat == null || lng == null) {
+        console.error(`Missing data for Device ${id}:`, {lat, lng});
+        return;
+    }
     // Validate coordinates
     if (typeof lat !== 'number' || typeof lng !== 'number' || isNaN(lat) || isNaN(lng)) {
         console.error(`Invalid coordinates for Device ${id}:`, lat, lng);
