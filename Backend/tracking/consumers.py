@@ -51,6 +51,6 @@ class LocationConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             print(f"Receive error: {str(e)}")    
 
-    async def send_location(self, event):
+    async def location_update(self, event):
         await self.send(text_data=json.dumps(event['data']))
          

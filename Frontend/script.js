@@ -405,19 +405,23 @@ function toggleModal(id) {
 
 function updateDeviceMarker(id, lat, lng) {
     // Validate coordinates
-    if (lat === null || lng === null || isNaN(lat) || isNaN(lng)) {
-        console.error('Invalid coordinates:', lat, lng);
+    if (typeof lat !== 'number' || typeof lng !== 'number' || isNaN(lat) || isNaN(lng)) {
+        console.error(`Invalid coordinates for Device ${id}:`, lat, lng);
         return;
     }
 
     // Ensure map exists
-    if (!deviceMap) {
+    if (!deviceMap || !deviceMap._container) {
         console.warn('Device map not initialized - initializing now');
         initDeviceMap();
-        if (!deviceMap) return;
+        if (!deviceMap || !deviceMap._container) {
+            console.error('Device map initialization failed');
+            return;
+        }
     }
 
     try {
+        // Create or update the marker
         if (!deviceMarkers[id]) {
             deviceMarkers[id] = L.marker([lat, lng], {
                 icon: L.divIcon({
@@ -426,33 +430,38 @@ function updateDeviceMarker(id, lat, lng) {
                     iconSize: [30, 30]
                 })
             }).addTo(deviceMap)
-            .bindPopup(`Device ${id}<br>Last update: ${new Date().toLocaleTimeString()}`);
+              .bindPopup(`Device ${id}<br>Last update: ${new Date().toLocaleTimeString()}`);
         } else {
             deviceMarkers[id].setLatLng([lat, lng]);
             deviceMarkers[id].setPopupContent(`Device ${id}<br>Last update: ${new Date().toLocaleTimeString()}`);
         }
-        
-        deviceMap.setView([lat, lng], 15);
+
+        // Optionally center map view
+        deviceMap.setView([lat, lng], deviceMap.getZoom() || 15);
     } catch (error) {
-        console.error('Error updating device marker:', error);
+        console.error(`Error updating Device ${id} marker:`, error);
     }
 }
 
 function updateVehicleMarker(id, lat, lng) {
     // Validate coordinates
-    if (lat === null || lng === null || isNaN(lat) || isNaN(lng)) {
-        console.error('Invalid coordinates:', lat, lng);
+    if (typeof lat !== 'number' || typeof lng !== 'number' || isNaN(lat) || isNaN(lng)) {
+        console.error(`Invalid coordinates for Vehicle ${id}:`, lat, lng);
         return;
     }
 
     // Ensure map exists
-    if (!vehicleMap) {
+    if (!vehicleMap || !vehicleMap._container) {
         console.warn('Vehicle map not initialized - initializing now');
         initVehicleMap();
-        if (!vehicleMap) return;
+        if (!vehicleMap || !vehicleMap._container) {
+            console.error('Vehicle map initialization failed');
+            return;
+        }
     }
 
     try {
+        // Create or update the marker
         if (!vehicleMarkers[id]) {
             vehicleMarkers[id] = L.marker([lat, lng], {
                 icon: L.divIcon({
@@ -461,17 +470,19 @@ function updateVehicleMarker(id, lat, lng) {
                     iconSize: [30, 30]
                 })
             }).addTo(vehicleMap)
-            .bindPopup(`Vehicle ${id}<br>Last update: ${new Date().toLocaleTimeString()}`);
+              .bindPopup(`Vehicle ${id}<br>Last update: ${new Date().toLocaleTimeString()}`);
         } else {
             vehicleMarkers[id].setLatLng([lat, lng]);
             vehicleMarkers[id].setPopupContent(`Vehicle ${id}<br>Last update: ${new Date().toLocaleTimeString()}`);
         }
-        
-        vehicleMap.setView([lat, lng], 15);
+
+        // Optionally center map view
+        vehicleMap.setView([lat, lng], vehicleMap.getZoom() || 15);
     } catch (error) {
-        console.error('Error updating vehicle marker:', error);
+        console.error(`Error updating Vehicle ${id} marker:`, error);
     }
 }
+
 
 async function loadDevices() {
     const BASE_API = 'http://127.0.0.1:8000';
