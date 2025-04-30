@@ -19,10 +19,29 @@ class VehicleCreateView(generics.CreateAPIView):
     serializer_class = VehicleSerializer
 
 # Device Search
+# @api_view(['GET'])
+# def device_search(request):
+#     search_type = request.query_params.get('search_type')
+#     search_value = request.query_params.get('search_value')
+#     devices = Device.objects.filter(**{search_type: search_value})
+#     serializer = DeviceSerializer(devices, many=True)
+#     return Response(serializer.data)
+
+# Vehicle Search
+# @api_view(['GET'])
+# def vehicle_search(request):
+#     search_type = request.query_params.get('search_type')
+#     search_value = request.query_params.get('search_value')
+#     vehicles = Vehicle.objects.filter(**{search_type: search_value})
+#     serializer = VehicleSerializer(vehicles, many=True)
+#     return Response(serializer.data)
+# Device Search
 @api_view(['GET'])
 def device_search(request):
-    search_type = request.query_params.get('search_type')
-    search_value = request.query_params.get('search_value')
+    search_type = request.query_params.get('type')  # was 'search_type'
+    search_value = request.query_params.get('value')
+    if not search_type or not search_value:
+        return Response({"error": "Missing search_type or value"}, status=400)
     devices = Device.objects.filter(**{search_type: search_value})
     serializer = DeviceSerializer(devices, many=True)
     return Response(serializer.data)
@@ -30,11 +49,14 @@ def device_search(request):
 # Vehicle Search
 @api_view(['GET'])
 def vehicle_search(request):
-    search_type = request.query_params.get('search_type')
-    search_value = request.query_params.get('search_value')
+    search_type = request.query_params.get('type')  # was 'search_type'
+    search_value = request.query_params.get('value')
+    if not search_type or not search_value:
+        return Response({"error": "Missing search_type or value"}, status=400)
     vehicles = Vehicle.objects.filter(**{search_type: search_value})
     serializer = VehicleSerializer(vehicles, many=True)
     return Response(serializer.data)
+
 
 # Update Device Location
 @api_view(['PATCH'])
