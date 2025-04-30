@@ -20,7 +20,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const mainMapEl = document.getElementById('map');
   
     let mainMap, deviceMap, vehicleMap;
-    let deviceMarker, vehicleMarker;
+    // let deviceMarker, vehicleMarker;
+    let deviceMarker = null;
+    let vehicleMarker = null;
+
   
     const socket = new WebSocket('ws://127.0.0.1:8000/ws/location/');
     socket.onmessage = function (event) {
