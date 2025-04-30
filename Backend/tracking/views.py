@@ -38,24 +38,46 @@ class VehicleCreateView(generics.CreateAPIView):
 # Device Search
 @api_view(['GET'])
 def device_search(request):
-    search_type = request.query_params.get('type')  # was 'search_type'
+    search_type = request.query_params.get('type')
     search_value = request.query_params.get('value')
-    if not search_type or not search_value:
-        return Response({"error": "Missing search_type or value"}, status=400)
-    devices = Device.objects.filter(**{search_type: search_value})
+
+    search_fields = {
+        "phone": "phone_number",
+        "imei": "imei",
+        "mac": "mac_address"
+    }
+
+    if search_type not in search_fields:
+        return Response({"error": "Invalid search type"}, status=400)
+
+    field_name = search_fields[search_type]
+    devices = Device.objects.filter(**{f"{field_name}__icontains": search_value})
+
     serializer = DeviceSerializer(devices, many=True)
     return Response(serializer.data)
+
 
 # Vehicle Search
 @api_view(['GET'])
 def vehicle_search(request):
-    search_type = request.query_params.get('type')  # was 'search_type'
+    search_type = request.query_params.get('type')
     search_value = request.query_params.get('value')
-    if not search_type or not search_value:
-        return Response({"error": "Missing search_type or value"}, status=400)
-    vehicles = Vehicle.objects.filter(**{search_type: search_value})
+
+    search_fields = {
+        "plate": "license_plate",
+        "make": "make_model",
+        "color": "color"
+    }
+
+    if search_type not in search_fields:
+        return Response({"error": "Invalid search type"}, status=400)
+
+    field_name = search_fields[search_type]
+    vehicles = Vehicle.objects.filter(**{f"{field_name}__icontains": search_value})
+
     serializer = VehicleSerializer(vehicles, many=True)
     return Response(serializer.data)
+
 
 
 # Update Device Location
